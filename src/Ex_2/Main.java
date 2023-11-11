@@ -14,23 +14,43 @@ public class Main {
         String inputDate = scanner.nextLine();
         scanner.close();
 
-        String dateRegex = "^(\\d{2}\\/\\d{2}\\/\\d{4} \\d{2}:\\d{2}:\\d{2}|\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}|\\d{2}\\.\\d{2}\\.\\d{4}|\\d{4})$";
+        String dateRegex = "^(\\d{2}/\\d{2}/\\d{4}|\\d{2}\\.\\d{2}\\.\\d{4}|\\d{2}\\.\\d{4}|\\d{4}|\\d{2}\\.\\d{2}\\.\\d{4} \\d{2}:\\d{2}:\\d{2})$";
 
         Pattern pattern = Pattern.compile(dateRegex);
-
         Matcher matcher = pattern.matcher(inputDate);
 
-        // Проверяем, соответствует ли введенная дата регулярному выражению
         if (matcher.matches()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.ENGLISH);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("d - E, M - MM, y - yyyy", Locale.ENGLISH);
+            SimpleDateFormat inputFormat;
+            String resultType;
+
+            if (inputDate.length() == 4) {
+                inputFormat = new SimpleDateFormat("yyyy", Locale.ENGLISH);
+                resultType = "год";
+            } else if (inputDate.length() == 7 && inputDate.contains(".")) {
+                inputFormat = new SimpleDateFormat("MM.yyyy", Locale.ENGLISH);
+                resultType = "месяц - MM, год - yyyy";
+            } else if (inputDate.length() == 7) {
+                inputFormat = new SimpleDateFormat("MM.yyyy", Locale.ENGLISH);
+                resultType = "месяц - MM, год - yyyy";
+            } else if (inputDate.length() == 10) {
+                inputFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.ENGLISH);
+                resultType = "день - E, месяц - MM, год - yyyy";
+            } else {
+                inputFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.ENGLISH);
+                resultType = "день - E, месяц - MM, год - yyyy";
+            }
 
             try {
-                Date date = sdf.parse(inputDate);
-                SimpleDateFormat outputFormat = new SimpleDateFormat("d - E, M - MM, y - yyyy, HH часов mm минут ss секунд", Locale.ENGLISH);
+                Date date = inputFormat.parse(inputDate);
                 String formattedDate = outputFormat.format(date);
 
                 System.out.println("Введено: " + inputDate);
-                System.out.println("Результат: " + formattedDate);
+                if (resultType.equals("год") || resultType.equals("месяц - MM, год - yyyy")) {
+                    System.out.println("Результат (" + resultType + "): " + inputDate);
+                } else {
+                    System.out.println("Результат: " + formattedDate);
+                }
             } catch (java.text.ParseException e) {
                 System.out.println("Ошибка при парсинге даты.");
             }
@@ -39,3 +59,5 @@ public class Main {
         }
     }
 }
+
+
